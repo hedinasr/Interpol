@@ -1,0 +1,177 @@
+#ifndef PAVING_H
+#define PAVING_H
+
+#include "Simplex.hpp"
+
+#include <cstring>
+#include <fstream>
+#include <iterator>
+#include <stdlib.h>
+#include <string>
+
+using std::ifstream;
+
+/*! \class Paving
+ * \brief This class give the tools to make the paving of multiplex.
+ */
+template <unsigned int N = 1> class Paving {
+
+private:
+public:
+  std::vector<Simplex<N> > multiplex;
+  std::vector<Point<N> > &multiPoints;
+
+  Paving() {}
+
+  Paving(std::vector<Point<N> > &points) : multiPoints(points) {}
+
+  ~Paving() {}
+
+  //! Initialize the Paving with all points and multiplex
+  void init() {
+    generate_point();
+    Simplex<N> container;
+    for (size_t i = 0; i < N + 1; i++) {
+      container.pushPoint(multiPoints[i]);
+    }
+    multiplex.push_back(container);
+    for (size_t i = N + 1; i < multiPoints.size(); i++) {
+      for (size_t j = 0; j < multiplex.size(); j++) {
+        if (isInside(multiPoints[i], multiplex[j])) {
+          replaceSimplex(multiPoints[i], multiplex[j]);
+          break;
+        }
+      }
+    }
+  }
+
+  //! print all points
+  void to_str() {
+    for (size_t i = 0; i < multiPoints.size(); i++) {
+      std::cout << multiPoints[i].to_str();
+    }
+  }
+
+  //! print all simplex
+  void to_str_simplex() {
+    for (size_t i = 0; i < multiplex.size(); i++) {
+      cout << endl << endl << "Simplex " << i + 1 << " :" << endl;
+      multiplex[i].to_str();
+    }
+    cout << endl << endl;
+  }
+
+  //! return true if p is in the simplex s
+  static bool isInside(const Point<N> &p, Simplex<N> &s) {
+    bool inside = true;
+    std::vector<Point<N> > opposed;
+    float m1[N][N]; // x par rapport a l'arrete
+    float m2[N][N]; // R par rapport a l'arrete
+    for (int k = 0; k < s.getSize(); k++) {
+      opposed.clear();
+      for (int i = 0; i < s.getSize(); i++) {
+        if (i != k)
+          opposed.push_back(s[i]);
+      }
+      // creation of matrix N*N
+      for (size_t i = 0; i < N; i++) {
+        for (size_t j = 0; j < N; j++) {
+          m1[i][j] = p[i] - (opposed[j])[i];      // x par rapport a Fbi
+          m2[i][j] = (s[k])[i] - (opposed[j])[i]; // R par rapport a Fbi
+        }
+      }
+      if (Simplex<N>::determinant(m1, N) * Simplex<N>::determinant(m2, N) <
+          0) { // determinants de signes different
+        inside = false;
+        break;
+      }
+    }
+    return inside;
+  }
+
+  //! Remplace le simplex s par N+1 simplexes divisé par p
+  void replaceSimplex(const Point<N> &p, Simplex<N> &s) {
+    std::vector<Simplex<N> > toAdd;
+    for (size_t i = 0; i < N + 1; i++) {
+      Simplex<N> simplex_temp;
+      simplex_temp.pushPoint(p);
+
+      for (size_t j = 0; j < N + 1; j++) {
+        if (i != j) {
+          simplex_temp.pushPoint(s[j]);
+        }
+      }
+      toAdd.push_back(simplex_temp);
+    }
+
+    auto simplexToErase = std::find(multiplex.begin(), multiplex.end(), s);
+
+    if (simplexToErase != multiplex.end()) {
+      // Destruction de l'ancien simplex
+      multiplex.erase(simplexToErase);
+    }
+
+    // ajout des nouveaux simplexes
+    multiplex.insert(multiplex.end(), toAdd.begin(), toAdd.end());
+  }
+
+  //! Retourne la valeur interpolée d'un point dans le pavage
+  float interpolateValue(const Point<N> &Q) {
+    bool found = false;
+    float value = 0;
+    float rapport = 0;
+    size_t iSimplex;
+    for (iSimplex = 0; iSimplex < multiplex.size(); iSimplex++) {
+      if (isInside(Q, multiplex[iSimplex])) {
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      cout << "Le point n'est dans aucun simplex" << endl;
+      return 0;
+    }
+
+    //  le rapport entre le volume du N-simplexe {Q,Fbj} et le volume du
+    //  N-simplexe D={Pbj,Fbj}.
+    for (int i = 0; i < multiplex[iSimplex].getSize(); i++) {
+      Simplex<N> temp;
+      temp.pushPoint(Q);
+      for (int j = 0; j < multiplex[iSimplex].getSize(); j++) {
+        if (i != j)
+          temp.pushPoint((multiplex[iSimplex])[j]);
+      }
+      // temp le simplex {Q,Fbj}
+      // <multiplex[iSimplex] le simplex {Pbj,Fbj}
+      rapport = temp.calculateVol() / multiplex[iSimplex].calculateVol();
+      value += rapport * (multiplex[iSimplex][i]).getValeur();
+    }
+    return value;
+  }
+
+  //! algorithm to generate the points
+  void generate_point() {
+    float max = 0;
+    float moyenneValeur = 0;
+    size_t nbPoints = multiPoints.size();
+    for (size_t i = 0; i < nbPoints; i++) {
+      if (multiPoints[i].coordMax() > max) {
+        max = multiPoints[i].coordMax();
+        moyenneValeur += multiPoints[i].getValeur();
+      }
+    }
+    moyenneValeur = moyenneValeur / nbPoints;
+    max = max * 3; //(pour avoir un nombre assez élevé)
+
+    // instanciation des points.
+    for (size_t i = 0; i < N; i++) {
+      Point<N> temp(0, moyenneValeur);
+      temp[i] = max;
+      multiPoints.insert(multiPoints.begin(), temp);
+    }
+    Point<N> temp(-max, moyenneValeur);
+    multiPoints.insert(multiPoints.begin(), temp);
+  }
+};
+
+#endif
