@@ -9,7 +9,7 @@
 #include "Image.h"
 #include "Scene.h"
 #include "Vec3f.h"
-#include "LeapServer.hpp"
+#include "LeapCamera.hpp"
 
 // Code ASCII
 #define ESCAPE 27
@@ -22,6 +22,7 @@
 
 Camera cam;
 Scene scene;
+LeapCamera leap(cam);
 
 int window;          // glut windows
 bool bLight = true;  // lighting on/off
@@ -208,7 +209,7 @@ void GLDraw(void) {
 
   glPopAttrib();
   sceneDraw(scene, dim, matrix);
-
+  leap.moveCamera(cam);
   // since this is double buffered, swap the buffers to display what just got
   // drawn.
   glutSwapBuffers();
@@ -328,7 +329,6 @@ void specialKeyPressed(int key, int x, int y) {
 
   const float stepR = 2;
   const int stepL = 1;
-
   if (glutGetModifiers() == GLUT_ACTIVE_CTRL) {
     switch (key) {
     case GLUT_KEY_UP:
@@ -404,6 +404,7 @@ void specialKeyPressed(int key, int x, int y) {
       break;
     }
   }
+  
 }
 
 void processMouse(int button, int state, int x, int y) {
@@ -493,8 +494,6 @@ int main(int argc, char **argv) {
     usage(argv[0]);
     exit(1);
   }
-
-  LeapServer leap;
 
   parse(argv[1]);
 

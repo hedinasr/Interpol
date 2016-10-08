@@ -27,6 +27,8 @@ void LeapServer::onFrame(const Controller & controller) {
       // MAJ de la direction
       direction = tempDirection;
     }
+  } else {
+    direction = UNDEFINED;
   }
 }
 
@@ -47,4 +49,8 @@ Direction LeapServer::findDirection(const Vector & vector) {
   } else {
     return UNDEFINED;
   }
+}
+
+Direction LeapServer::getDirection() {
+  return this->direction;
 }

@@ -21,6 +21,8 @@ public:
   virtual void onDeviceFailure(const Controller &);
   // Retourne la direction du vecteur de la main
   Direction findDirection(const Vector & vector);
+  // getter
+  Direction getDirection();
 };
 
 #endif // LEAP_SERVER_HPP
