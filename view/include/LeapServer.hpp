@@ -14,44 +14,13 @@ private:
   Controller controller;
 
 public:
-  LeapServer() {
-    direction = UNDEFINED;
-  };
-  ~LeapServer() {
-    controller.removeListener(*this);
-  };
-  virtual void onConnect(const Controller &) {
-    fprintf(stdout, "Leap connected : %d!\n", controller.isConnected());
-  };
-  virtual void onFrame(const Controller &) {
-    const Frame frame = controller.frame();
-    FingerList fingers = frame.fingers().extended();
-    Hand hand = frame.hands()[0];
-
-    // Si la main est valide + 5 doigts
-    if (hand.isValid() && fingers.count() == 5) {
-      Direction tempDirection = findDirection(hand.palmPosition());
-      if (tempDirection != direction) {
-        fprintf(stdout, "tempDirection : %d\n", tempDirection);
-        // MAJ de la direction
-        direction = tempDirection;
-      }
-    }
-  };
+  LeapServer();
+  ~LeapServer();
+  virtual void onConnect(const Controller &);
+  virtual void onFrame(const Controller &);
+  virtual void onDeviceFailure(const Controller &);
   // Retourne la direction du vecteur de la main
-  Direction findDirection(const Vector & vector) {
-      if (vector.x > 90) { // Droite
-        return L;
-      } else if (vector.x < -90) { // Gauche
-        return R;
-      } else if (vector.z < -90) { // Haut
-        return FORWARD;
-      } else if (vector.z > 90) { // Bas
-        return BACKWARD;
-      } else {
-        return UNDEFINED;
-      }
-  };
+  Direction findDirection(const Vector & vector);
 };
 
 #endif // LEAP_SERVER_HPP

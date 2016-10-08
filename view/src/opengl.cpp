@@ -22,7 +22,6 @@
 
 Camera cam;
 Scene scene;
-LeapServer leap;
 
 int window;          // glut windows
 bool bLight = true;  // lighting on/off
@@ -494,6 +493,8 @@ int main(int argc, char **argv) {
     usage(argv[0]);
     exit(1);
   }
+
+  LeapServer leap;
 
   parse(argv[1]);
 
