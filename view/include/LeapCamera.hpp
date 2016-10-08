@@ -13,9 +13,8 @@
 class LeapCamera : public LeapServer {
 
 private:
-  Camera cam;
 public:
-  LeapCamera(const Camera &);
+  LeapCamera();
   ~LeapCamera();
   void moveCamera(Camera &);
 };

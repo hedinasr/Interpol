@@ -2,9 +2,7 @@
 
 #include "LeapCamera.hpp"
 
-LeapCamera::LeapCamera(const Camera & camera) {
-  this->cam = camera;
-}
+LeapCamera::LeapCamera() {}
 
 LeapCamera::~LeapCamera() {}
 

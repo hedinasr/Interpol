@@ -22,7 +22,7 @@
 
 Camera cam;
 Scene scene;
-LeapCamera leap(cam);
+LeapCamera leap;
 
 int window;          // glut windows
 bool bLight = true;  // lighting on/off
