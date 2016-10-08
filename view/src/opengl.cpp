@@ -9,6 +9,7 @@
 #include "Image.h"
 #include "Scene.h"
 #include "Vec3f.h"
+#include "LeapServer.hpp"
 
 // Code ASCII
 #define ESCAPE 27
@@ -21,6 +22,7 @@
 
 Camera cam;
 Scene scene;
+LeapServer leap;
 
 int window;          // glut windows
 bool bLight = true;  // lighting on/off
@@ -69,51 +71,51 @@ void help() {
 }
 
 // Load Bitmaps And Convert To Textures
-unsigned int LoadGLTexture(const char *nomfichier, bool isTransparency,
-                           const unsigned char R, const unsigned char G,
-                           const unsigned char B, int option) {
-  Image image1;
-  imInitPPM(image1, nomfichier);
+// unsigned int LoadGLTexture(const char *nomfichier, bool isTransparency,
+//                            const unsigned char R, const unsigned char G,
+//                            const unsigned char B, int option) {
+//   Image image1;
+//   imInitPPM(image1, nomfichier);
 
-  if (isTransparency)
-    imCreateTransparency(image1, R, G, B, option);
+//   if (isTransparency)
+//     imCreateTransparency(image1, R, G, B, option);
 
-  unsigned int texture;
+//   unsigned int texture;
 
-  // Create Textures
-  glGenTextures(1, &texture);
+//   // Create Textures
+//   glGenTextures(1, &texture);
 
-  // mipmapped texture
-  glBindTexture(GL_TEXTURE_2D, texture); // 2d texture (x and y size)
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
-                  GL_LINEAR); // scale linearly when image bigger than texture
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-                  GL_LINEAR_MIPMAP_LINEAR); // GL_LINEAR_MIPMAP_NEAREST); //
-                                            // scale mipmap when image smalled
-                                            // than texture
-  switch (imGetDimC(image1)) {
-  case 1:
-    gluBuild2DMipmaps(GL_TEXTURE_2D, 1, imGetDimX(image1), imGetDimY(image1),
-                      GL_LUMINANCE, GL_UNSIGNED_BYTE, imGetData(image1));
-    break;
-  case 3:
-    gluBuild2DMipmaps(GL_TEXTURE_2D, 3, imGetDimX(image1), imGetDimY(image1),
-                      GL_RGB, GL_UNSIGNED_BYTE, imGetData(image1));
-    break;
-  case 4:
-    gluBuild2DMipmaps(GL_TEXTURE_2D, 4, imGetDimX(image1), imGetDimY(image1),
-                      GL_RGBA, GL_UNSIGNED_BYTE, imGetData(image1));
-    break;
-  default:
-    printf(
-        "LoadGLTexture: can not load GL texture! dimColor is not managed!\n");
-    break;
-  }
+//   // mipmapped texture
+//   glBindTexture(GL_TEXTURE_2D, texture); // 2d texture (x and y size)
+//   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+//                   GL_LINEAR); // scale linearly when image bigger than texture
+//   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+//                   GL_LINEAR_MIPMAP_LINEAR); // GL_LINEAR_MIPMAP_NEAREST); //
+//                                             // scale mipmap when image smalled
+//                                             // than texture
+//   switch (imGetDimC(image1)) {
+//   case 1:
+//     gluBuild2DMipmaps(GL_TEXTURE_2D, 1, imGetDimX(image1), imGetDimY(image1),
+//                       GL_LUMINANCE, GL_UNSIGNED_BYTE, imGetData(image1));
+//     break;
+//   case 3:
+//     gluBuild2DMipmaps(GL_TEXTURE_2D, 3, imGetDimX(image1), imGetDimY(image1),
+//                       GL_RGB, GL_UNSIGNED_BYTE, imGetData(image1));
+//     break;
+//   case 4:
+//     gluBuild2DMipmaps(GL_TEXTURE_2D, 4, imGetDimX(image1), imGetDimY(image1),
+//                       GL_RGBA, GL_UNSIGNED_BYTE, imGetData(image1));
+//     break;
+//   default:
+//     printf(
+//         "LoadGLTexture: can not load GL texture! dimColor is not managed!\n");
+//     break;
+//   }
 
-  imFree(image1);
+//   imFree(image1);
 
-  return texture;
-}
+//   return texture;
+// }
 
 void GLColor(const float r, const float g, const float b) {
   // when the light is enable

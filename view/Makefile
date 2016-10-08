@@ -37,13 +37,13 @@ OBJS 	:= $(addprefix $(OBJD)/, $(notdir $(OBJ)))
 default: $(BIND) $(OBJD) $(BIND)/$(EXEC)
 
 ifeq ($(OS), Darwin)
-				echo $(OS)
-				install_name_tool -change @loader_path/libLeap.dylib LeapSDK/lib/libLeap.dylib $(BIND)/$(EXEC)
+	echo $(OS)
+	install_name_tool -change @loader_path/libLeap.dylib LeapSDK/lib/libLeap.dylib $(BIND)/$(EXEC)
 endif
 
 $(BIND)/$(EXEC): $(OBJS)
 	@$(ECHO) "Linking ..\n"
-	$(LD) -o $@ $^ $(LDFLAGS) $(LIBD) $(LIBS) -Wl,-rpath ./
+	$(LD) -o $@ $^ $(LDFLAGS) $(LIBD) $(LIBS) $(LEAP_LIBRARY) -Wl,-rpath ./
 
 $(OBJD)/%.o: $(SRCD)/%.cpp
 	@$(ECHO) "Compiling source file ..\n"
