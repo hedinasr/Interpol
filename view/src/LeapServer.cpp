@@ -1,8 +1,12 @@
+#include <math.h>
+
 #include "LeapServer.hpp"
 
 LeapServer::LeapServer() {
   printf("instance of Leap\n");
   direction = UNDEFINED;
+  gesture = UNDEFINED;
+  controller.enableGesture(Gesture::TYPE_CIRCLE);
   controller.addListener(*this);
 }
 
@@ -18,6 +22,25 @@ void LeapServer::onFrame(const Controller & controller) {
   const Frame frame = controller.frame();
   FingerList fingers = frame.fingers().extended();
   Hand hand = frame.hands()[0];
+  GestureList gestures = frame.gestures();
+
+  for(GestureList::const_iterator gl = gestures.begin(); gl != frame.gestures().end(); gl++)
+    {
+      if ((*gl).type() == Gesture::TYPE_CIRCLE) {
+        CircleGesture circle(*gl);
+        if (circle.pointable().direction().angleTo(circle.normal())
+            <= M_PI/4) {
+          printf("droite\n");
+          this->gesture = R;
+        } else {
+          printf("gauche\n");
+          this->gesture = L;
+        }
+      } else {
+        printf("undef\n");
+        this->gesture = UNDEFINED;
+      }
+    }
 
   // Si la main est valide + 5 doigts
   if (hand.isValid() && fingers.count() == 5) {
@@ -25,10 +48,10 @@ void LeapServer::onFrame(const Controller & controller) {
     if (tempDirection != direction) {
       fprintf(stdout, "tempDirection : %d\n", tempDirection);
       // MAJ de la direction
-      direction = tempDirection;
+      this->direction = tempDirection;
     }
   } else {
-    direction = UNDEFINED;
+    this->direction = UNDEFINED;
   }
 }
 
@@ -53,4 +76,8 @@ Direction LeapServer::findDirection(const Vector & vector) {
 
 Direction LeapServer::getDirection() {
   return this->direction;
+}
+
+Direction LeapServer::getGesture() {
+  return this->gesture;
 }

@@ -10,7 +10,8 @@ using namespace Leap;
 class LeapServer : public Listener {
 
 private:
-  Direction direction;
+  Direction direction; // current hand direction
+  Direction gesture; // current gesture
   Controller controller;
 
 public:
@@ -23,6 +24,7 @@ public:
   Direction findDirection(const Vector & vector);
   // getter
   Direction getDirection();
+  Direction getGesture();
 };
 
 #endif // LEAP_SERVER_HPP

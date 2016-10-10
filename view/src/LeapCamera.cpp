@@ -10,6 +10,19 @@ void LeapCamera::moveCamera(Camera& camera) {
   /* avoid thrashing this procedure */
   usleep(100);
 
+  switch (this->getGesture()) {
+  case 2:
+    printf("GESTURE DROITE\n");
+    // TODO right rotation
+    break;
+  case 3:
+    //printf("GESTURE GAUCHE\n");
+    // TODO left rotation
+    break;
+  default:
+    break;
+  }
+
   switch (this->getDirection()) {
   case 0:
     printf("FRONT\n");
