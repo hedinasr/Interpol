@@ -24,23 +24,23 @@ void LeapServer::onFrame(const Controller & controller) {
   Hand hand = frame.hands()[0];
   GestureList gestures = frame.gestures();
 
-  for(GestureList::const_iterator gl = gestures.begin(); gl != frame.gestures().end(); gl++)
-    {
-      if ((*gl).type() == Gesture::TYPE_CIRCLE) {
-        CircleGesture circle(*gl);
-        if (circle.pointable().direction().angleTo(circle.normal())
-            <= M_PI/4) {
-          printf("droite\n");
-          this->gesture = R;
-        } else {
-          printf("gauche\n");
-          this->gesture = L;
+  if (!gestures.isEmpty()) {
+    for(GestureList::const_iterator gl = gestures.begin();
+        gl != frame.gestures().end(); gl++)
+      {
+        if ((*gl).type() == Gesture::TYPE_CIRCLE) {
+          CircleGesture circle(*gl);
+          if (circle.pointable().direction().angleTo(circle.normal())
+              <= PI/2) {
+            this->gesture = R;
+          } else {
+            this->gesture = L;
+          }
         }
-      } else {
-        printf("undef\n");
-        this->gesture = UNDEFINED;
       }
-    }
+  } else {
+    this->gesture = UNDEFINED;
+  }
 
   // Si la main est valide + 5 doigts
   if (hand.isValid() && fingers.count() == 5) {

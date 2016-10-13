@@ -26,7 +26,6 @@ inline void camInit(Camera& cam, const Camera_FlyTrackball ft=CAMERA_TRACKBALL)
     cam.rotLeft = 0;
     cam.mode = 0;
     cam.flyOrTrackball = ft;
-
 }
 
 
@@ -89,6 +88,7 @@ inline void camTurnUpDown(Camera& cam, const float stepR=2.f)
 {
     cam.rotUp += stepR;
 }
+
 inline void camTurnLeftRight(Camera& cam, const float stepR=2.f)
 {
     cam.rotLeft += stepR;

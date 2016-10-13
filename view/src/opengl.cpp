@@ -425,12 +425,13 @@ void processMouse(int button, int state, int x, int y) {
 }
 
 void processMouseActiveMotion(int x, int y) {
-  // printf("processMouseActiveMotion\n");
+  //printf("processMouseActiveMotion\n");
   camMove(cam, x, y);
+  printf("%d/%d\n",x ,y);
 }
 
 void processMousePassiveMotion(int x, int y) {
-  // printf("processMousePassiveMotion\n");
+  //printf("processMousePassiveMotion\n");
 }
 
 void parse(const char *file) {
