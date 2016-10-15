@@ -11,8 +11,6 @@
 #include "Camera.h"
 
 class LeapCamera : public LeapServer {
-
-private:
 public:
   LeapCamera();
   ~LeapCamera();

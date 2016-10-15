@@ -5,7 +5,6 @@
 LeapServer::LeapServer() {
   printf("instance of Leap\n");
   direction = UNDEFINED;
-  gesture = UNDEFINED;
   controller.enableGesture(Gesture::TYPE_CIRCLE);
   controller.addListener(*this);
 }
@@ -24,6 +23,9 @@ void LeapServer::onFrame(const Controller & controller) {
   Hand hand = frame.hands()[0];
   GestureList gestures = frame.gestures();
 
+  //printf("Frame per second : %f\n", frame.currentFramesPerSecond());
+  //printf("Number of gesture : %d\n", gestures.count());
+
   if (!gestures.isEmpty()) {
     for(GestureList::const_iterator gl = gestures.begin();
         gl != frame.gestures().end(); gl++)
@@ -32,14 +34,14 @@ void LeapServer::onFrame(const Controller & controller) {
           CircleGesture circle(*gl);
           if (circle.pointable().direction().angleTo(circle.normal())
               <= PI/2) {
-            this->gesture = R;
+            //this->gesture = R;
+            this->rotations.push(1);
           } else {
-            this->gesture = L;
+            //this->gesture = L;
+            this->rotations.push(2);
           }
         }
       }
-  } else {
-    this->gesture = UNDEFINED;
   }
 
   // Si la main est valide + 5 doigts
@@ -76,8 +78,4 @@ Direction LeapServer::findDirection(const Vector & vector) {
 
 Direction LeapServer::getDirection() {
   return this->direction;
-}
-
-Direction LeapServer::getGesture() {
-  return this->gesture;
 }

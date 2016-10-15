@@ -404,7 +404,6 @@ void specialKeyPressed(int key, int x, int y) {
       break;
     }
   }
-  
 }
 
 void processMouse(int button, int state, int x, int y) {

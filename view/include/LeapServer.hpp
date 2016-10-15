@@ -2,6 +2,8 @@
 #define LEAP_SERVER_HPP
 
 #include "Leap.h"
+#include <stdio.h>
+#include <queue>
 
 enum Direction { FORWARD, BACKWARD, R, L, UNDEFINED };
 
@@ -11,7 +13,6 @@ class LeapServer : public Listener {
 
 private:
   Direction direction; // current hand direction
-  Direction gesture; // current gesture
   Controller controller;
 
 public:
@@ -24,7 +25,7 @@ public:
   Direction findDirection(const Vector & vector);
   // getter
   Direction getDirection();
-  Direction getGesture();
+  std::queue<int> rotations;
 };
 
 #endif // LEAP_SERVER_HPP
